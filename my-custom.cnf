@@ -1,0 +1,26 @@
+# /etc/mysql/conf.d/custom/my-custom.cnf
+[mysqld]
+# 字符集配置（适配Ubuntu中文环境）
+character-set-server=utf8mb4
+collation-server=utf8mb4_unicode_ci
+init_connect='SET NAMES utf8mb4'
+
+# 连接配置（优化Ubuntu下的连接稳定性）
+max_connections=1000
+wait_timeout=600
+interactive_timeout=600
+
+# 日志配置（输出到容器stdout，便于docker logs查看）
+general_log=0  # 关闭通用日志（生产环境建议关闭）
+slow_query_log=1
+slow_query_log_file=/var/lib/mysql/slow.log
+long_query_time=2  # 慢查询阈值（2秒）
+
+# 数据文件配置（适配Ubuntu磁盘IO）
+innodb_buffer_pool_size=512M  # 缓冲池大小（根据内存调整，建议物理内存的50%）
+innodb_log_file_size=128M
+innodb_flush_log_at_trx_commit=1  # 事务安全优先（生产环境推荐）
+
+# 允许Ubuntu宿主远程连接（开发环境，生产环境需限制IP）
+bind-address=0.0.0.0  # 绑定所有网卡（官方默认已配置，此处明确）
+default-authentication-plugin=mysql_native_password  # 兼容旧客户端（如Navicat）
